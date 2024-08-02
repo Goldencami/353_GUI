@@ -199,8 +199,40 @@ app.get('/getQ7', (req, res) => { //q7
     .catch(err => res.status(500).json({ error: err.message }))
 });
 
+app.get('/getQ8/:FamilyId', (req, res) => { //q8
+    const FamilyId = parseInt(req.params.FamilyId);
+    console.log(req.params)
+    if (isNaN(FamilyId)) {
+        return res.status(400).json({ error: 'Invalid family ID' });
+    }
+    const result = dbFunctions.query8(FamilyId);
+
+    result
+    .then(data => res.json({ data : data }))
+    .catch(err => res.status(500).json({ error: err.message }))
+});
+
+app.get('/getQ9/:address/:date', (req, res) => { //q9
+    console.log(req.params)
+    const result = dbFunctions.query9(req.params.address, req.params.date);
+
+    result
+    .then(data => res.json({ data : data }))
+    .catch(err => res.status(500).json({ error: err.message }))
+});
+
 app.get('/getQ10', (req, res) => { //q10
     const result = dbFunctions.query10();
+
+    result
+    .then(data => res.json({ data : data }))
+    .catch(err => res.status(500).json({ error: err.message }))
+});
+
+app.get('/getQ11/:date1/:date2', (req, res) => { //q11
+    //2023-08-09; 2024-09-05
+    console.log(req.params)
+    const result = dbFunctions.query11(req.params.date1, req.params.date2);
 
     result
     .then(data => res.json({ data : data }))
@@ -231,14 +263,10 @@ app.get('/getQ14', (req, res) => { //q14
     .catch(err => res.status(500).json({ error: err.message }))
 });
 
-app.get('/getQ15/:FamAtLocationId', (req, res) => { //q15
-    const locationId = parseInt(req.params.FamAtLocationId);
+app.get('/getQ15/:address', (req, res) => { //q15
     console.log(req.params)
-    if (isNaN(locationId)) {
-        return res.status(400).json({ error: 'Invalid location ID' });
-    }
 
-    const result = dbFunctions.query15(locationId);
+    const result = dbFunctions.query15(req.params.address);
 
     result
     .then(data => res.json({ data : data }))

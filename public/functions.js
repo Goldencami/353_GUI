@@ -2,23 +2,6 @@
 const tableOutput = document.querySelector('#output-section table tbody');
 const tableHead = document.querySelector('#output-section table thead');
 
-// query person insert
-export function insertPersonRow(data) {
-    const isTableData = tableOutput.querySelector('.no-data');
-    let tableHtml = "<tr>";
-    for(var key in data) {
-        tableHtml += `<td>${data[key]}</td>`;
-    }
-    tableHtml += "</tr>";
-
-    if(isTableData) {
-        tableOutput.innerHTML = tableHtml;
-    }
-    else {
-        tableOutput.innerHTML += tableHtml;
-    }
-}
-
 // query person display
 export function loadAllPersons(data) {
     tableHead.innerHTML = "<th>Person ID</th><th>First Name</th><th>Last Name</th><th>Date of Birth</th><th>Medical Number</th>" +
@@ -42,26 +25,6 @@ export function loadAllPersons(data) {
     });
 
     tableOutput.innerHTML = tableHtml;
-}
-
-// query 1 insert
-export function insertLocationRow(data) {
-    const isTableData = tableOutput.querySelector('.no-data');
-    let tableHtml = "<tr>";
-    
-    for(var key in data) {
-        tableHtml += `<td>${data[key]}</td>`;
-    }
-    tableHtml += `<td><button type="button" data-id="${data.location_id}" class="btn btn-warning locEditBtn">Edit</button></td>`;
-    tableHtml += `<td><button type="button" data-id="${data.location_id}" class="btn btn-danger locDeleteBtn">Delete</button></td>`;
-    tableHtml += "</tr>";
-
-    if(isTableData) {
-        tableOutput.innerHTML = tableHtml;
-    }
-    else {
-        tableOutput.innerHTML += tableHtml;
-    }
 }
 
 // query 1 delete
@@ -175,26 +138,6 @@ export function loadAllLocations(data) {
     tableOutput.innerHTML = tableHtml;
 }
 
-// query 2 insert
-export function insertPersonnelRow(data) {
-    const isTableData = tableOutput.querySelector('.no-data');
-    let tableHtml = "<tr>";
-    
-    for(var key in data) {
-        tableHtml += `<td>${data[key]}</td>`;
-    }
-    tableHtml += `<td><button type="button" data-id="${data.personnel_id}" class="btn btn-warning personnelEditBtn">Edit</button></td>`;
-    tableHtml += `<td><button type="button" data-id="${data.personnel_id}" class="btn btn-danger personnelDeleteBtn">Delete</button></td>`;
-    tableHtml += "</tr>";
-
-    if(isTableData) {
-        tableOutput.innerHTML = tableHtml;
-    }
-    else {
-        tableOutput.innerHTML += tableHtml;
-    }
-}
-
 // query 2 delete
 export function deletePersonnelRow(personnelId) {
     fetch(`http://localhost:3006/deletePersonnel/${personnelId}`, {
@@ -278,25 +221,6 @@ export function loadAllPersonnel(data) {
     });
 
     tableOutput.innerHTML = tableHtml;
-}
-
-// query 3 insert
-export function insertFamilyRow(data) {
-    const isTableData = tableOutput.querySelector('.no-data');
-    let tableHtml = "<tr>";
-    for(var key in data) {
-        tableHtml += `<td>${data[key]}</td>`;
-    }
-    tableHtml += `<td><button type="button" data-id="${data.family_id}" class="btn btn-warning familyEditBtn">Edit</button></td>`;
-    tableHtml += `<td><button type="button" data-id="${data.family_id}" class="btn btn-danger familyDeleteBtn">Delete</button></td>`;
-    tableHtml += "</tr>";
-
-    if(isTableData) {
-        tableOutput.innerHTML = tableHtml;
-    }
-    else {
-        tableOutput.innerHTML += tableHtml;
-    }
 }
 
 // query 3 delete
@@ -383,25 +307,6 @@ export function loadAllFamily(data) {
     tableOutput.innerHTML = tableHtml;
 }
 
-// query 4 insert
-export function insertClubMemberRow(data) {
-    const isTableData = tableOutput.querySelector('.no-data');
-    let tableHtml = "<tr>";
-    
-    for(var key in data) {
-        tableHtml += `<td>${data[key]}</td>`;
-    }
-    tableHtml += `<td><button type="button" data-id="${data.member_id}" class="btn btn-warning memberEditBtn">Edit</button></td>`;
-    tableHtml += `<td><button type="button" data-id="${data.member_id}" class="btn btn-danger memberDeleteBtn">Delete</button></td>`;
-    tableHtml += "</tr>";
-
-    if(isTableData) {
-        tableOutput.innerHTML = tableHtml;
-    }
-    else {
-        tableOutput.innerHTML += tableHtml;
-    }
-}
 
 // query 4 delete
 export function deleteClubMemberRow(memberId) {
@@ -495,28 +400,6 @@ export function loadAllClubMembers(data) {
     });
 
     tableOutput.innerHTML = tableHtml;
-}
-
-// query 5 insert
-export function insertTeamFormRow(data) {
-    const isTableData = tableOutput.querySelector('.no-data');
-    let tableHtml = "<tr>";
-
-    for(var key in data) {
-        console.log(`data: ${data[key]}`)
-        tableHtml += `<td>${data[key]}</td>`;
-    }
-
-    tableHtml += `<td><button type="button" data-id="${data.formation_id}" class="btn btn-warning formationEditBtn">Edit</button></td>`;
-    tableHtml += `<td><button type="button" data-id="${data.formation_id}" class="btn btn-danger formationDeleteBtn">Delete</button></td>`;
-    tableHtml += "</tr>";
-
-    if(isTableData) {
-        tableOutput.innerHTML = tableHtml;
-    }
-    else {
-        tableOutput.innerHTML += tableHtml;
-    }
 }
 
 // query 5 delete
@@ -613,8 +496,6 @@ export function loadAllTeamFormation(data) {
     tableOutput.innerHTML = tableHtml;
 }
 
-// query 6 insert
-
 // query 6 display
 
 // query 7
@@ -648,6 +529,74 @@ export function loadQ7(data) {
     tableOutput.innerHTML = tableHtml;
 }
 
+// query 8
+export function loadQ8(data) {
+    tableHead.innerHTML = "<th>2nd Family First Name</th><th>2nd Family Last Name</th><th>2nd Family Phone Number</th><th>Club Member ID</th><th>First Name</th><th>Last Name</th><th>Date of Birth</th>" +
+                            "<th>SSN</th><th>Medical Number/th><th>Phone Number</th><th>Address</th><th>City</th><th>Province</th><th>Postal-Code</th><th>Relationship</th>";
+
+    if(data.length === 0) {
+        tableOutput.innerHTML = "<tr><td class='no-data' colspan='15'>No Data</td></tr>";
+        return;
+    }
+
+    let tableHtml = "";
+
+    data.forEach(function ({second_fam_first_name, second_fam_last_name, second_fam_phone, member_id, first_name, 
+                            last_name, date_of_birth, SSN, medic_no, phone_no, address, city, province, postal_code, relationship}) {
+
+        tableHtml += "<tr>";
+        tableHtml += `<td>${second_fam_first_name}</td>`;
+        tableHtml += `<td>${second_fam_last_name}</td>`;
+        tableHtml += `<td>${second_fam_phone}</td>`;
+        tableHtml += `<td>${member_id}</td>`;
+        tableHtml += `<td>${first_name}</td>`;
+        tableHtml += `<td>${last_name}</td>`;
+        tableHtml += `<td>${date_of_birth}</td>`;
+        tableHtml += `<td>${SSN}</td>`;
+        tableHtml += `<td>${medic_no}</td>`;
+        tableHtml += `<td>${phone_no}</td>`;
+        tableHtml += `<td>${address}</td>`;
+        tableHtml += `<td>${city}</td>`;
+        tableHtml += `<td>${province}</td>`;
+        tableHtml += `<td>${postal_code}</td>`;
+        tableHtml += `<td>${relationship}</td>`;
+        tableHtml += "</tr>";
+    });
+
+    tableOutput.innerHTML = tableHtml;
+}
+
+// query 9
+export function loadQ9(data) {
+    tableHead.innerHTML = "<th>Coach First Name</th><th>Coach Last Name</th><th>Formation Time</th><th>Address</th><th>Formation Type</th><th>Team Name</th>" +
+                            "<th>Team 1 Score</th><th>Team 2 Score</th><th>Member First Name</th><th>Member Last Name</th><th>Member Role</th>";
+
+    if(data.length === 0) {
+        tableOutput.innerHTML = "<tr><td class='no-data' colspan='11'>No Data</td></tr>";
+        return;
+    }
+
+    let tableHtml = "";
+
+    data.forEach(function ({c_first_name, c_last_name, form_time, form_address, formation_type, team_name, team1_score, team2_score, cm_first_name, cm_last_name, player_role}) {
+        tableHtml += "<tr>";
+        tableHtml += `<td>${c_first_name}</td>`;
+        tableHtml += `<td>${c_last_name}</td>`;
+        tableHtml += `<td>${form_time}</td>`;
+        tableHtml += `<td>${form_address}</td>`;
+        tableHtml += `<td>${formation_type}</td>`;
+        tableHtml += `<td>${team_name}</td>`;
+        tableHtml += `<td>${team1_score}</td>`;
+        tableHtml += `<td>${team2_score}</td>`;
+        tableHtml += `<td>${cm_first_name}</td>`;
+        tableHtml += `<td>${cm_last_name}</td>`;
+        tableHtml += `<td>${player_role}</td>`;
+        tableHtml += "</tr>";
+    });
+
+    tableOutput.innerHTML = tableHtml;
+}
+
 // query 10
 export function loadQ10(data) {
     tableHead.innerHTML = "<th>Member ID</th><th>First Name</th><th>Last Name</th>";
@@ -664,6 +613,30 @@ export function loadQ10(data) {
         tableHtml += `<td>${member_id}</td>`;
         tableHtml += `<td>${first_name}</td>`;
         tableHtml += `<td>${last_name}</td>`;
+        tableHtml += "</tr>";
+    });
+
+    tableOutput.innerHTML = tableHtml;
+}
+
+// query 11
+export function loadQ11(data) {
+    tableHead.innerHTML = "<th>Formation Address</th><th>Total Training Sessions</th><th>Total Players</th><th>Total Games</th><th>Total Players for Games</th>"
+
+    if(data.length === 0) {
+        tableOutput.innerHTML = "<tr><td class='no-data' colspan='5'>No Data</td></tr>";
+        return;
+    }
+
+    let tableHtml = "";
+
+    data.forEach(function ({form_address, total_train_sessions, total_players_for_train, total_game_sessions, total_players_for_game}) {
+        tableHtml += "<tr>";
+        tableHtml += `<td>${form_address}</td>`;
+        tableHtml += `<td>${total_train_sessions}</td>`;
+        tableHtml += `<td>${total_players_for_train}</td>`;
+        tableHtml += `<td>${total_game_sessions}</td>`;
+        tableHtml += `<td>${total_players_for_game}</td>`;
         tableHtml += "</tr>";
     });
 

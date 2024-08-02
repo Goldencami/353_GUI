@@ -1,27 +1,24 @@
 import {
-    insertPersonRow,
     loadAllPersons,
-    insertLocationRow,
     deleteLocationRow,
     updateLocationRow,
     loadAllLocations,
-    insertPersonnelRow,
     deletePersonnelRow,
     updatePersonnelRow,
     loadAllPersonnel,
-    insertFamilyRow,
     deleteFamilyRow,
     loadAllFamily,
-    insertClubMemberRow,
     deleteClubMemberRow,
     updateClubMemberRow,
-    loadAllClubMembers, 
-    insertTeamFormRow,
+    loadAllClubMembers,
     deleteTeamFormRow,
     updateTeamFormRow,
     loadAllTeamFormation,
     loadQ7,
+    loadQ8,
+    loadQ9,
     loadQ10,
+    loadQ11,
     loadQ12To14_16,
     loadQ15, 
     loadQ17,
@@ -151,6 +148,45 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => errorPopup(err));
     });
 
+    const Q8Btn = document.getElementById('q8Btn');
+    Q8Btn.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        const FamilyId = document.getElementById('FamilyMemId').value;
+
+        fetch(`http://localhost:3006/getQ8/${FamilyId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                errorPopup(data.error);  // Handle error from get
+            } else {
+                loadQ8(data['data']);
+            }
+        })
+        .catch(err => errorPopup(err));   
+    });
+
+
+    const Q9Btn = document.getElementById('q9Btn');
+    Q9Btn.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        let location_day = document.getElementById('location-day').value;
+        const loc_dayArr = location_day.split(';')
+        loc_dayArr.forEach((element, index) => {
+            loc_dayArr[index] = element.trim();
+        });
+
+        fetch(`http://localhost:3006/getQ9/${loc_dayArr[0]}/${loc_dayArr[1]}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                errorPopup(data.error);  // Handle error from get
+            } else {
+                loadQ9(data['data']);
+            }
+        })
+        .catch(err => errorPopup(err));   
+    });
+
     const Q10Btn = document.getElementById('q10Btn');
     Q10Btn.addEventListener('click', function() {
         fetch('http://localhost:3006/getQ10')
@@ -163,6 +199,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(err => errorPopup(err));
+    });
+
+    const Q11Btn = document.getElementById('q11Btn');
+    Q11Btn.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        let date_range = document.getElementById('team-time').value;
+        const datesArr = date_range.split(';')
+        datesArr.forEach((element, index) => {
+            datesArr[index] = element.trim();
+        });
+
+        fetch(`http://localhost:3006/getQ11/${datesArr[0]}/${datesArr[1]}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                errorPopup(data.error);  // Handle error from get
+            } else {
+                loadQ11(data['data']);
+            }
+        })
+        .catch(err => errorPopup(err));   
     });
 
     const Q12Btn = document.getElementById('q12Btn');
@@ -210,9 +267,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const Q15Btn = document.getElementById('q15Btn');
     Q15Btn.addEventListener('click', function(event) {
         event.preventDefault(); // Prevent the form from submitting the traditional way
-        const FamAtLocationId = document.getElementById('locationId').value;
+        const address = document.getElementById('q15_address').value;
 
-        fetch(`http://localhost:3006/getQ15/${FamAtLocationId}`)
+        fetch(`http://localhost:3006/getQ15/${address}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -284,9 +341,6 @@ for(let i=0; i < 6; i++) {
         
             if(locationArr.length === 7) {
                 locationArr[6] = parseInt(locationArr[6]);
-                fetch('http://localhost:3006/getAllLocations')
-                .then(response => response.json())
-                .then(data => loadAllLocations(data['data']));  
         
                 fetch('http://localhost:3006/insertLocation', {
                     headers: {
@@ -300,7 +354,9 @@ for(let i=0; i < 6; i++) {
                     if (data.error) {
                         errorPopup(data.error);  // Handle error from inserting
                     } else {
-                        insertLocationRow(data['data']);
+                        fetch('http://localhost:3006/getAllLocations')
+                        .then(response => response.json())
+                        .then(data => loadAllLocations(data['data']));  
                     }
                 })
                 .catch(err => errorPopup(err));
@@ -318,10 +374,6 @@ for(let i=0; i < 6; i++) {
             });
             
             if(personArr.length === 9) {
-                fetch('http://localhost:3006/getAllPersons')
-                .then(response => response.json())
-                .then(data => loadAllPersons(data['data']));  
-        
                 fetch('http://localhost:3006/insertPerson', {
                     headers: {
                         'Content-type' : 'application/json'
@@ -334,7 +386,9 @@ for(let i=0; i < 6; i++) {
                     if (data.error) {
                         errorPopup(data.error);  // Handle error from inserting
                     } else {
-                        insertPersonRow(data['data']);
+                        fetch('http://localhost:3006/getAllPersons')
+                        .then(response => response.json())
+                        .then(data => loadAllPersons(data['data']));  
                     }
                 })
                 .catch(err => errorPopup(err));
@@ -354,9 +408,6 @@ for(let i=0; i < 6; i++) {
             if(personnelArr.length === 5) {
                 personnelArr[3] = parseInt(personnelArr[3]);
                 personnelArr[4] = parseInt(personnelArr[4]);
-                fetch('http://localhost:3006/getAllPersonnel')
-                .then(response => response.json())
-                .then(data => loadAllPersonnel(data['data']));  
         
                 fetch('http://localhost:3006/insertPersonnel', {
                     headers: {
@@ -370,7 +421,9 @@ for(let i=0; i < 6; i++) {
                     if (data.error) {
                         errorPopup(data.error);  // Handle error from inserting
                     } else {
-                        insertPersonnelRow(data['data']);
+                        fetch('http://localhost:3006/getAllPersonnel')
+                        .then(response => response.json())
+                        .then(data => loadAllPersonnel(data['data']));  
                     }
                 })
                 .catch(err => errorPopup(err));
@@ -389,10 +442,6 @@ for(let i=0; i < 6; i++) {
 
             if(familyArr.length === 1 && familyArr[0] !== '') {
                 familyArr[0] = parseInt(familyArr[0]);
-                fetch('http://localhost:3006/getAllFamily')
-                .then(response => response.json())
-                .then(data => loadAllFamily(data['data']));  
-        
                 fetch('http://localhost:3006/insertFamily', {
                     headers: {
                         'Content-type' : 'application/json'
@@ -405,7 +454,9 @@ for(let i=0; i < 6; i++) {
                     if (data.error) {
                         errorPopup(data.error);  // Handle error from inserting
                     } else {
-                        insertFamilyRow(data['data']);
+                        fetch('http://localhost:3006/getAllFamily')
+                        .then(response => response.json())
+                        .then(data => loadAllFamily(data['data']));  
                     }
                 })
                 .catch(err => errorPopup(err));
@@ -429,9 +480,6 @@ for(let i=0; i < 6; i++) {
                 memberArr[3] = parseInt(memberArr[3]);
                 memberArr[5] = parseInt(memberArr[5]);
                 memberArr[6] = parseInt(memberArr[6]);
-                fetch('http://localhost:3006/getAllClubMembers')
-                .then(response => response.json())
-                .then(data => loadAllClubMembers(data['data']));  
         
                 fetch('http://localhost:3006/insertClubMember', {
                     headers: {
@@ -445,7 +493,10 @@ for(let i=0; i < 6; i++) {
                     if (data.error) {
                         errorPopup(data.error);  // Handle error from inserting
                     } else {
-                        insertClubMemberRow(data['data']);
+                        fetch('http://localhost:3006/getAllClubMembers')
+                        .then(response => response.json())
+                        .then(data => loadAllClubMembers(data['data']));  
+                
                     }
                 })
                 .catch(err => errorPopup(err));
@@ -468,10 +519,6 @@ for(let i=0; i < 6; i++) {
                 FormationArr[3] = parseInt(FormationArr[3]);
                 FormationArr[4] = parseInt(FormationArr[4]);
                 FormationArr[5] = parseInt(FormationArr[5]);
-
-                fetch('http://localhost:3006/getAllTeamsFormation')
-                .then(response => response.json())
-                .then(data => loadAllTeamFormation(data['data']));  
         
                 fetch('http://localhost:3006/insertTeamFormation', {
                     headers: {
@@ -485,7 +532,9 @@ for(let i=0; i < 6; i++) {
                     if (data.error) {
                         errorPopup(data.error);  // Handle error from inserting
                     } else {
-                        insertTeamFormRow(data['data']);
+                        fetch('http://localhost:3006/getAllTeamsFormation')
+                        .then(response => response.json())
+                        .then(data => loadAllTeamFormation(data['data']));  
                     }
                 })
                 .catch(err => errorPopup(err));
@@ -552,9 +601,9 @@ popup.addEventListener('click', function(event) {
         const updInfo = document.querySelectorAll('.updLocation');
         updateLocationRow(updInfo, event.target.dataset.id, event.target.id);
 
-        // fetch('http://localhost:3006/getAllLocations')
-        // .then(response => response.json())
-        // .then(data => loadAllLocations(data['data']));
+        fetch('http://localhost:3006/getAllLocations')
+        .then(response => response.json())
+        .then(data => loadAllLocations(data['data']));
     }
     else if(event.target.className == 'btn btn-warning btn-sm personnel') {
         console.log(`button with id: ${event.target.dataset.id} will update ${event.target.id}`);

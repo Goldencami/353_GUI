@@ -65,7 +65,7 @@ async function getAllPersons() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -159,7 +159,7 @@ async function getAllLocations() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -251,7 +251,7 @@ async function getAllPersonnel() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -339,7 +339,7 @@ async function getAllFamily() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -434,7 +434,7 @@ async function getAllClubMembers() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -529,7 +529,7 @@ async function getAllTeamFormation() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -539,19 +539,20 @@ async function getAllTeamFormation() {
 async function query7() {
     try {
         const response = await new Promise((resolve, reject) => { //if error in query it will reject it and go into catch block
-            const query = `SELECT location.address, location.city, location.province,
-                            location.postal_code, location.phone_no, location.web_address,
-                            location.location_type, location.capacity,
-                            person.first_name, person.last_name,
-                            COUNT(member_id) AS no_members
+            const query = `SELECT location.address, postal_codes.city, postal_codes.postal_code, 
+                            postal_codes.province, location.phone_no, web_address, location_type, capacity, 
+                            person.first_name, person.last_name, COUNT(member_id) AS no_members
                             FROM operates
                             JOIN location ON location.location_id = operates.location_id 
                             JOIN personnel ON personnel.personnel_id = operates.personnel_id
                             JOIN person ON person.id = operates.personnel_id
                             JOIN registered ON registered.location_id = location.location_id 
+                            JOIN location_postal_codes ON location_postal_codes.location_id = operates.location_id 
+                            JOIN postal_codes ON postal_codes.postal_code = location_postal_codes.postal_code
                             WHERE registered.end_date is null AND operates.end_date is null AND is_manager = 1 
                             GROUP BY location.location_id
-                            ORDER BY location.province, location.city ASC`;
+                            ORDER BY postal_codes.province, postal_codes.city ASC
+                            `;
             
             db.query(query, (err, res) => {
                 if (err) reject(new Error(err.message));
@@ -563,7 +564,70 @@ async function query7() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
+    }
+}
+
+// query 8
+async function query8(familyId) { // TO CHANGE
+    try {
+        const response = await new Promise((resolve, reject) => { //if error in query it will reject it and go into catch block
+            const query = `SELECT scfam.first_name AS second_fam_first_name, scfam.last_name AS second_fam_last_name,
+                            scfam.phone_no AS second_fam_phone, club_member.member_id, cm.first_name, cm.last_name, 
+                            DATE_FORMAT(cm.date_of_birth, '%Y-%m-%d') AS date_of_birth, cm.SSN, cm.medic_no, 
+                            cm.phone_no, cm.address, postal_codes.city, postal_codes.province, postal_codes.postal_code,
+                            associated.relationship
+                            FROM club_member
+                            JOIN person cm ON club_member.member_id = cm.id
+                            JOIN person_postal_codes ON cm.id = person_postal_codes.person_id
+                            JOIN postal_codes ON person_postal_codes.postal_code = postal_codes.postal_code
+                            JOIN person scfam ON club_member.family_id2 = scfam.id
+                            JOIN associated ON club_member.family_id2 = associated.family_id
+                            WHERE club_member.family_id1 = ?`;
+            
+            db.query(query, [familyId], (err, res) => {
+                if (err) reject(new Error(err.message));
+                resolve(res);
+            })
+        });
+
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
+
+// query 9
+async function query9(address, date) {
+    try {
+        const response = await new Promise((resolve, reject) => { //if error in query it will reject it and go into catch block
+            const query = `SELECT coach.first_name AS c_first_name, coach.last_name AS c_last_name, involves.form_time, involves.form_address, team_formation.formation_type,
+                            team.team_name , team_formation.team1_score AS team1_score, team_formation.team2_score AS team2_score,
+                            cm.first_name AS cm_first_name, cm.last_name AS cm_last_name, plays_in.player_role
+                            FROM involves
+                            JOIN person coach ON involves.coach_id = coach.id
+                            JOIN team_formation ON involves.formation_id = team_formation.formation_id
+                            JOIN plays_in ON team_formation.formation_id =plays_in.formation_id
+                            JOIN club_member ON plays_in.member_id = club_member.member_id
+                            JOIN person cm ON club_member.member_id = cm.id
+                            JOIN registered ON club_member.member_id = registered.member_id AND currently_playing = 1 AND (involves.team1_id = registered.team_id OR involves.team2_id = registered.team_id)
+                            JOIN team ON registered.team_id = team.team_id
+                            WHERE involves.form_address = ? AND involves.form_date = ?
+                            ORDER BY involves.form_time ASC`;
+            
+            db.query(query, [address, date], (err, res) => {
+                if (err) reject(new Error(err.message));
+                resolve(res);
+            })
+        });
+
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.log(error)
+        throw error;
     }
 }
 
@@ -590,7 +654,38 @@ async function query10() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
+    }
+}
+
+// query 11
+async function query11(date1, date2) {
+    try {
+        const response = await new Promise((resolve, reject) => { //if error in query it will reject it and go into catch block
+            const query = `SELECT involves.form_address, COUNT(DISTINCT tf1.formation_id) AS total_train_sessions,
+                            COUNT(pi1.member_id) AS total_players_for_train, COUNT(DISTINCT tf2.formation_id) AS total_game_sessions,
+                            COUNT(pi2.member_id) AS total_players_for_game
+                            FROM involves
+                            LEFT JOIN team_formation tf1 ON involves.formation_id = tf1.formation_id AND tf1.formation_type = 'Training Session'
+                            LEFT JOIN team_formation tf2 ON involves.formation_id = tf2.formation_id AND tf2.formation_type = 'Game'
+                            LEFT JOIN plays_in pi1 ON tf1.formation_id = pi1.formation_id 
+                            LEFT JOIN plays_in pi2 ON tf2.formation_id = pi2.formation_id
+                            WHERE involves.form_date BETWEEN ? AND ?
+                            GROUP BY involves.form_address
+                            HAVING COUNT(DISTINCT tf2.formation_id) >= 3
+                            ORDER BY COUNT(DISTINCT tf2.formation_id) DESC`;
+            
+            db.query(query, [date1, date2], (err, res) => {
+                if (err) reject(new Error(err.message));
+                resolve(res);
+            })
+        });
+
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.log(error)
+        throw error;
     }
 }
 
@@ -617,7 +712,7 @@ async function query12() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -646,7 +741,7 @@ async function query13() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -675,23 +770,23 @@ async function query14() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
 // query 15
-async function query15(locationId) { // TO CHANGE
+async function query15(address) { // TO CHANGE
     try {
         const response = await new Promise((resolve, reject) => { //if error in query it will reject it and go into catch block
-            const query = `SELECT first_name, last_name, person.phone_no FROM location
-                            JOIN registered ON location.location_id = registered.location_id
-                            JOIN associated ON registered.member_id = associated.member_id
-                            JOIN person ON associated.family_id = person.id
-                            JOIN personnel ON person.id = personnel.personnel_id
-                            WHERE location.location_id = ? AND registered.end_date IS NULL
-                                AND work_role = 'trainer'`;
+            const query = `SELECT person.first_name , person.last_name , person.phone_no 
+                            FROM involves
+                            JOIN associated ON involves.coach_id = associated.family_id
+                            JOIN registered ON associated.member_id = registered.member_id AND registered.currently_playing = 1
+                            JOIN person ON involves.coach_id = person.id
+                            WHERE involves.form_address = ?
+                            GROUP BY involves.coach_id`;
             
-            db.query(query, [locationId], (err, res) => {
+            db.query(query, [address], (err, res) => {
                 if (err) reject(new Error(err.message));
                 resolve(res);
             })
@@ -701,7 +796,7 @@ async function query15(locationId) { // TO CHANGE
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -730,7 +825,7 @@ async function query16() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -755,7 +850,7 @@ async function query17() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -782,7 +877,7 @@ async function query18() {
         return response;
     } catch (error) {
         console.log(error)
-        throw err;
+        throw error;
     }
 }
 
@@ -810,7 +905,10 @@ module.exports = {
     updateTeamFormation,
     getAllTeamFormation,
     query7,
+    query8,
+    query9,
     query10,
+    query11,
     query12,
     query13,
     query14,
