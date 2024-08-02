@@ -1,0 +1,9 @@
+CREATE
+
+Location: gyatt ; 999 street; i9a7p2; 0003332222; www.test.com; Branch; 10
+Person: Jo; Jo; 2000-01-01;JMAM99999999; 6666666666; 23 lil Hood; 666hhh; jojo@gmail.com; 000333444
+        John; Cena; 1977-04-23; JCEN88884444; 0002227777; 123 Hall; 999jjj; john_cena@hotmail.com; 999666111
+Personnel: 50; manager; Salaries;0;0
+Family Member:49
+Club Member: 185; 184;null;1;M;6;1
+Team Formation: Game; 3;2;5;5;null
