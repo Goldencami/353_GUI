@@ -572,17 +572,17 @@ async function query7() {
 async function query8(familyId) { // TO CHANGE
     try {
         const response = await new Promise((resolve, reject) => { //if error in query it will reject it and go into catch block
-            const query = `SELECT scfam.first_name AS second_fam_first_name, scfam.last_name AS second_fam_last_name,
+            const query = `SELECT scfam.first_name AS second_fam_first_name, scfam.last_name AS second_fam_last_name, 
                             scfam.phone_no AS second_fam_phone, club_member.member_id, cm.first_name, cm.last_name, 
-                            DATE_FORMAT(cm.date_of_birth, '%Y-%m-%d') AS date_of_birth, cm.SSN, cm.medic_no, 
-                            cm.phone_no, cm.address, postal_codes.city, postal_codes.province, postal_codes.postal_code,
-                            associated.relationship
-                            FROM club_member
-                            JOIN person cm ON club_member.member_id = cm.id
-                            JOIN person_postal_codes ON cm.id = person_postal_codes.person_id
-                            JOIN postal_codes ON person_postal_codes.postal_code = postal_codes.postal_code
+                            DATE_FORMAT(cm.date_of_birth, '%Y-%m-%d') AS date_of_birth, cm.SSN, cm.medic_no,
+                            cm.phone_no, cm.address, postal_codes.city, postal_codes.province, postal_codes.postal_code, 
+                            associated.relationship 
+                            FROM club_member 
+                            JOIN person cm ON club_member.member_id = cm.id 
+                            JOIN person_postal_codes ON cm.id = person_postal_codes.person_id 
+                            JOIN postal_codes ON person_postal_codes.postal_code = postal_codes.postal_code 
                             JOIN person scfam ON club_member.family_id2 = scfam.id
-                            JOIN associated ON club_member.family_id2 = associated.family_id
+                            JOIN associated ON club_member.family_id2 = associated.family_id AND club_member.member_id = associated.member_id 
                             WHERE club_member.family_id1 = ?`;
             
             db.query(query, [familyId], (err, res) => {
